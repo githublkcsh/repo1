@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace映射文件的名称 -->
+<mapper namespace="edu.xasl.dao.RoleDao">
+    <resultMap id="selectFunctionByUserIDResultMap" type="Authority">
+        <id property="function_id" column="function_id"></id>
+        <result property="function_name" column="function_name"></result>
+
+
+        <result property="fatherFunction_name" column="father_function_name"></result>
+
+    </resultMap>
+    <insert id="insertRoleFunction" parameterType="authority">
+        INSERT INTO t_authoritys(role_id,function_id) VALUES((SELECT t_role.`role_id` FROM t_role WHERE t_role.`role_name`=#{roleList[0].role_name}),(SELECT t_function.`function_id` FROM t_function WHERE t_function.`function_name`=#{function_name}));
+    </insert>
+    <insert id="insertRole" parameterType="role">
+        INSERT INTO t_role(`role_name`) VALUES(#{role_name});
+    </insert>
+    <select id="selectAuthority" resultMap="selectFunctionByUserIDResultMap">
+         SELECT t_function.`function_id`,t_function.`function_name`,t_function.`father_function_id`,father_function.`function_name` father_function_name
+        FROM t_function LEFT JOIN t_function father_function ON(t_function.father_function_id=father_function.function_id);
+    </select>
+    <select id="selectTotalRecord" resultType="_int">
+       SELECT COUNT(*) AS totalrecord  FROM t_role
+    </select>
+    <resultMap id="select" type="edu.xasl.pojo.Role">
+        <id property="role_id" column="role_id"></id>
+        <result column="role_name" property="role_name"></result>
+        <result column="GROUP_CONCAT( t_function.`function_name` )" property="functon_name"></result>
+    </resultMap>
+    <select id="selectIdCard" parameterType="map" resultMap="select">
+        SELECT
+	t_role.`role_id`,
+	t_role.`role_name`,
+	GROUP_CONCAT( t_function.`function_name` )
+FROM
+	t_role,
+	t_authoritys,
+	t_function
+WHERE
+	t_role.`role_id` = t_authoritys.`role_id`
+	AND t_authoritys.`function_id` = t_function.`function_id`
+GROUP BY
+	(t_role.`role_id`) limit #{startIndex},#{pageUtil}
+
+    </select>
+    <resultMap id="selectRoleByRoleIdResultMap" type="role">
+    <id column="role_id" property="role_id"></id>
+    <result property="role_name" column="role_name"></result>
+    <collection property="authorityList" ofType="authority">
+        <result column="function_name" property="function_name"></result>
+    </collection></resultMap>
+    <select id="selectRoleById" parameterType="String" resultMap="selectRoleByRoleIdResultMap">
+         SELECT t_role.`role_id`,t_role.`role_name`,t_function.`function_name` FROM t_role,t_authoritys,t_function
+        WHERE t_role.`role_id`=#{role_id} AND t_authoritys.`role_id`=t_role.`role_id` AND t_function.`function_id`=t_authoritys.`function_id`
+    </select>
+    <update id="updateRoleByRoleId" parameterType="role">
+        update t_role set t_role.role_name=#{role_name} where t_role.role_id=#{role_id}
+
+    </update>
+    <update id="updateRoleFunction" parameterType="authority">
+         INSERT INTO t_authoritys(role_id,function_id) VALUES(#{roleList[0].role_id},
+        (SELECT t_function.`function_id` FROM t_function WHERE t_function.`function_name`=#{function_name}));
+
+    </update>
+    <delete id="deleteRoleFunction" parameterType="role">
+        delete from t_authoritys where t_authoritys.role_id=#{role_id}
+
+    </delete>
+
+    <delete id="deleteByRoleId" parameterType="role">
+         DELETE FROM t_role WHERE t_role.`role_id`=#{role_id};
+    </delete>
+
+    <select id="selectTotalRecord01" resultType="_int">
+       SELECT COUNT(*) AS totalrecord  FROM t_userrole
+    </select>
+    <resultMap id="select01" type="edu.xasl.pojo.User">
+        <id property="user_id" column="user_id"></id>
+        <result column="user_name" property="user_name"></result>
+        <result column="user_password" property="user_password"></result>
+        <result column="group_concat(t_role.`role_name`)" property="role_name"></result>
+    </resultMap>
+    <select id="selectUserRole" parameterType="map" resultMap="select01">
+         select  t_user.`user_id`,t_user.`user_name`,t_user.`user_password`,  group_concat(t_role.`role_name`)from t_user,t_userrole,t_role where t_user.`user_id`=t_userrole.`user_id`and t_userrole.`role_id`=t_role.`role_id`group by(t_user.`user_id`) limit #{startIndex},#{pageUtil}
+    </select>
+    <update id="updaterole" parameterType="user">
+        update t_userrole set t_userrole.role_id=(SELECT t_role.`role_id` FROM t_role WHERE t_role.`role_name`=#{role_name}) where t_userrole.user_id=#{user_id}
+    </update>
+    <delete id="deleteuserrole" parameterType="String">
+        delete from t_userrole where t_userrole.user_id=#{user_id}
+    </delete>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace映射文件的名称 -->
+<mapper namespace="edu.xasl.dao.IdCardDao">
+    <select id="selectTotalRecord" resultType="_int">
+        SELECT COUNT(*) AS totalrecord  FROM t_idcard
+    </select>
+    <select id="selectIdCard" parameterType="map" resultType="idCard">
+        SELECT  t_idcard.`idcard_id`,t_idcard.`idcard_no`,t_user.`user_name` FROM t_idcard LEFT JOIN t_user ON (t_user.`idcard_id`=t_idcard.`idcard_id`) limit #{startIndex},#{pageUtil}
+    </select>
+    <select id="upateFindByIdcard" parameterType="String" resultType="edu.xasl.pojo.IdCard">
+        select * from t_idcard where idcard_id=#{idcard_id}
+    </select>
+    <update id="updateidcard" parameterType="String" >
+        update t_idcard set idcard_no=#{idcard_no} where idcard_id=#{idcard_id}
+    </update>
+    <select id="selectDeptById" parameterType="edu.xasl.pojo.IdCard" resultType="edu.xasl.pojo.IdCard">
+        SELECT  t_idcard.`idcard_id`,t_idcard.`idcard_no`,t_user.`user_name` FROM t_idcard LEFT JOIN t_user ON (t_user.`idcard_id`=t_idcard.`idcard_id`) where t_idcard.`idcard_id`=#{idcard_id}
+    </select>
+    <delete id="deleteById" parameterType="String" >
+        delete t_idcard from t_idcard , t_user where t_idcard.idcard_id=#{idcard_id}
+    </delete>
+    <insert id="insertIdCard" parameterType="String">
+        insert into t_idcard(t_idcard.idcard_no) values (#{idcard_no})
+    </insert>
+    <select id="findAllUserno" parameterType="map" resultType="idCard">
+        SELECT  t_idcard.`idcard_id`,t_idcard.`idcard_no`,t_user.`user_name` FROM t_idcard LEFT JOIN t_user ON (t_user.`idcard_id`=t_idcard.`idcard_id`) order by t_idcard.`idcard_id` desc  limit #{startIndex},#{pageUtil}
+    </select>
+</mapper>

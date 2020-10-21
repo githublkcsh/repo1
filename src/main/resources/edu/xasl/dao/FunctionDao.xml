@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace映射文件的名称 -->
+<mapper namespace="edu.xasl.dao.FunctionDao">
+    <resultMap id="selectFunctionByUserIDResultMap" type="Authority">
+    <id property="function_id" column="function_id"></id>
+    <result property="function_name" column="function_name"></result>
+    <result property="function_address" column="function_address"></result>
+
+        <result property="fatherFunction_name" column="father_function_name"></result>
+
+    </resultMap>
+    <insert id="addfunction" parameterType="String">
+        INSERT INTO t_function(t_function.function_name,t_function.function_address,t_function.father_function_id) VALUES(#{function_name},#{function_address},
+        (SELECT father_function.`function_id` FROM t_function father_function WHERE father_function.`function_name`=#{fatherFunction}));
+    </insert>
+    <select id="findAllFatherFunction" resultType="Authority">
+        SELECT t_function.`function_id` ,t_function.`function_name`FROM t_function WHERE ISNULL(t_function.`father_function_id`);
+    </select>
+    <select id="selectFunction" resultMap="selectFunctionByUserIDResultMap" parameterType="map">
+          SELECT son_function.`function_id`,son_function.`function_name`,son_function.`function_address`,father_function.`function_name` father_function_name FROM t_function son_function,t_function father_function WHERE son_function.`father_function_id` = father_function.`function_id` limit #{startIndex},#{pageUtil}
+    </select>
+    <select id="selectTotalRecord" resultType="_int">
+         SELECT COUNT(*) AS totalrecord  FROM t_function
+    </select>
+    <select id="selectFunctionById" parameterType="String" resultType="Authority">
+       SELECT t_function.`function_id` functionId,t_function.`function_name`,t_function.`function_address`  FROM t_function WHERE t_function.`function_id`=#{function_id}
+    </select>
+    <select id="selectSonFunctionById" parameterType="Authority" resultMap="selectFunctionByUserIDResultMap">
+        SELECT t_function.`function_id`,t_function.`function_name`,t_function.`function_address`,father_function.`function_name` father_function_name FROM t_function,t_function father_function WHERE t_function.`function_id`=${function_id} AND father_function.`function_id`=t_function.`father_function_id`
+   </select>
+    <select id="selectFatherFunctionById" resultType="Integer">
+        SELECT t_function.`father_function_id` FROM t_function WHERE t_function.`function_id`=${function_id};
+    </select>
+
+    <select id="selectFaFunctionById" parameterType="String" resultType="Authority">
+        SELECT t_function.`function_id`,t_function.`function_name`,t_function.`function_address` FROM t_function WHERE t_function.`function_id`=${function_id};
+    </select>
+    <update id="updateFunction">
+       update t_function set function_name=#{function_name},function_address=#{function_address},father_function_id=#{fatherFunction_name} where function_id=#{function_id}
+    </update>
+    <delete id="deleteFunction" parameterType="String">
+         DELETE FROM t_function WHERE t_function.`function_id`=#{function_id}
+    </delete>
+    <delete id="deleteFunction01" parameterType="String">
+        delete from t_authoritys where function_id=#{function_id}
+    </delete>
+</mapper>

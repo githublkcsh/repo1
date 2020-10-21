@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace映射文件的名称 -->
+<mapper namespace="edu.xasl.dao.DeptDao">
+    <resultMap id="select" type="edu.xasl.pojo.Dept">
+        <result column="group_concat(t_user.`user_name`)" property="user_name"></result>
+        <result column="dept_id" property="dept_id"></result>
+        <result column="dept_name" property="dept_name"></result>
+        <result column="dept_address" property="dept_address"></result>
+    </resultMap>
+    <select id="selectDept" resultType="edu.xasl.pojo.Dept">
+        select t_dept.`dept_id`,t_dept.`dept_name` from t_dept
+    </select>
+    <select id="selectTotalRecord" resultType="_int">
+        SELECT COUNT(*) AS totalrecord  FROM t_idcard
+    </select>
+    <select id="selectDept1" parameterType="map" resultMap="select">
+        select t_dept.`dept_id`,t_dept.`dept_name`,t_dept.`dept_address`,group_concat(t_user.`user_name`) from t_dept left join t_user on (t_dept.`dept_id`=t_user.`dept_id`)group by dept_id limit #{startIndex},#{pageUtil}
+    </select>
+    <select id="selectDeptById" parameterType="String" resultType="dept">
+        select * from t_dept where dept_id=#{dept_id}
+    </select>
+    <update id="updatedept" parameterType="String">
+        update t_dept set dept_name=#{dept_name},dept_address=#{dept_address} where dept_id=#{dept_id}
+    </update>
+    <select id="findDeptById" parameterType="_int" resultMap="select">
+        select t_dept.`dept_id`,t_dept.`dept_name`,t_dept.`dept_address`,group_concat(t_user.`user_name`) from t_dept left join t_user on (t_dept.`dept_id`=t_user.`dept_id`)where t_dept.dept_id=#{dept_id} group by dept_id
+    </select>
+    <update id="updateUserDept" parameterType="String">
+        update t_user set t_user.dept_id=null where t_user.dept_id=#{dept_id}
+    </update>
+    <delete id="deleteDept" parameterType="String">
+        delete t_dept from t_dept where t_dept.dept_id=#{dept_id}
+    </delete>
+    <insert id="insertDept" parameterType="String" >
+        insert into t_dept(t_dept.dept_name,t_dept.dept_address) values (#{dept_name},#{dept_address})
+    </insert>
+    <select id="selectAllUser" resultType="user">
+        	select t_user.user_id,t_user.user_name from t_user where t_user.user_id not in (SELECT t_user.user_id FROM t_user WHERE t_user.`dept_id` IS NOT NULL)
+    </select>
+    <resultMap id="select1" type="edu.xasl.pojo.User">
+        <result column="group_concat(t_user.`user_name`)" property="user_name"></result>
+
+    </resultMap>
+    <select id="selectUserDept" parameterType="_int" resultType="user">
+        select t_user.user_id ,t_user.user_name from t_user  where dept_id=#{dept_id}
+    </select>
+
+    <update id="insertUser" parameterType="String">
+         update t_user set t_user.dept_id=#{dept_id} where t_user.user_id=#{user_id}
+    </update>
+
+    
+</mapper>

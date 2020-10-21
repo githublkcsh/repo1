@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace映射文件的名称 -->
+<mapper namespace="edu.xasl.dao.UserDao">
+    <select id="selectTotalRecord" resultType="_int">
+        SELECT COUNT(*) AS totalrecord  FROM t_user
+    </select>
+    <select id="selectUser" parameterType="map" resultType="user">
+    SELECT t_user.`user_id`,t_user.`user_name`,t_user.`user_password`,t_user.`user_sex`,t_user.`user_age`,t_idcard.`idcard_no`,t_dept.`dept_name`FROM t_user LEFT JOIN t_idcard ON (t_user.`idcard_id`=t_idcard.`idcard_id`)LEFT JOIN t_dept ON(t_user.`dept_id`=t_dept.`dept_id`) limit #{startIndex},#{pageUtil}
+</select>
+    <select id="findUserById" resultType="user" parameterType="String">
+       SELECT t_user.`user_id`,t_user.`user_name`,t_user.`user_password`,t_user.`user_sex`,t_user.`user_age`,t_idcard.`idcard_no`,t_dept.`dept_name`FROM t_user LEFT JOIN t_idcard ON (t_user.`idcard_id`=t_idcard.`idcard_id`)LEFT JOIN t_dept ON(t_user.`dept_id`=t_dept.`dept_id`)  where t_user.user_id=#{user_id}
+    </select>
+    <select id="findnoIdcard" resultType="edu.xasl.pojo.IdCard" >
+        select  t_idcard.`idcard_id`,t_idcard.`idcard_no` from t_idcard where t_idcard.`idcard_id` not in (SELECT t_user.`idcard_id` FROM t_user WHERE t_user.`idcard_id` IS NOT NULL)
+    </select>
+    <update id="updateUserById" >
+        update t_user set user_name =#{user_name},user_sex =#{user_sex},user_age = #{user_age},user_password=#{user_password},idcard_id=#{idcard_id},dept_id=#{dept_id} where user_id =#{user_id}
+    </update>
+    <delete id="deleteUserByIdServlet" parameterType="String">
+          delete a,b from t_user as a  left join t_idcard as b on a.idcard_id=b.idcard_id where user_id=#{user_id}
+    </delete>
+    <insert id="register" parameterType="user">
+        INSERT INTO t_user(t_user.user_name,t_user.user_password,t_user.user_sex,t_user.user_age,t_user.dept_id)VALUES(#{user_name},#{user_password},#{user_sex},#{user_age},#{dept_id})
+    </insert>
+    <select id="findAllUserno" parameterType="map" resultType="user">
+        SELECT t_user.`user_id`,t_user.`user_name`,t_user.`user_password`,t_user.`user_sex`,t_user.`user_age`,t_idcard.`idcard_no`,t_dept.`dept_name`FROM t_user LEFT JOIN t_idcard ON (t_user.`idcard_id`=t_idcard.`idcard_id`)LEFT JOIN t_dept ON(t_user.`dept_id`=t_dept.`dept_id`) order by user_id desc limit #{startIndex},#{pageUtil}
+    </select>
+    <select id="selectRole"  resultType="role">
+        select * from t_role
+
+    </select>
+    <insert id="addrole" parameterType="role">
+        insert into t_userrole(t_userrole.role_id,t_userrole.user_id)values((select t_role.role_id from t_role where t_role.role_name=#{role_name}),(select t_user.user_id from t_user where t_user.user_name=#{userList[0].user_name}))
+    </insert>
+    <resultMap id="select01" type="edu.xasl.pojo.User">
+        <id property="user_id" column="user_id"></id>
+        <result column="user_name" property="user_name"></result>
+        <result column="user_password" property="user_password"></result>
+        <result column="group_concat(t_role.`role_name`)" property="role_name"></result>
+    </resultMap>
+    <select id="findUserById01" parameterType="String" resultMap="select01">
+         select  t_user.`user_id`,t_user.`user_name`,t_user.`user_password`,  group_concat(t_role.`role_name`)
+from t_user,t_userrole,t_role
+where t_user.`user_id`=t_userrole.`user_id`
+	and t_userrole.`role_id`=t_role.`role_id`and t_user.`user_id`=#{user_id}
+group by(t_user.`user_id`)
+    </select>
+    <select id="login" parameterType="user" resultType="user">
+        select * from t_user where user_name=#{user_name} and user_password=#{user_password}
+    </select>
+    <resultMap id="selectFunctionByUserIDResultMap" type="authority">
+        <id property="function_id" column="function_id"></id>
+        <result property="function_name" column="function_name"></result>
+        <result property="function_address" column="function_address"></result>
+        <association property="fatherFunction" javaType="authority">
+            <result property="function_name" column="father_function_name"></result>
+        </association>
+    </resultMap>
+    <select id="selectFunctionByUsername" parameterType="String" resultMap="selectFunctionByUserIDResultMap">
+  SELECT
+	temp.`function_id`,
+	temp.`function_name`,
+	temp.`function_address`,
+	temp.`father_function_id`,
+	father_function.`function_name` father_function_name
+FROM
+	(
+	SELECT
+		t_function.`function_id`,
+		t_function.`function_name`,
+		t_function.`function_address`,
+		t_function.`father_function_id`
+	FROM
+		`t_user`,
+		`t_userrole`,
+		`t_role`,
+		`t_authoritys`,
+		`t_function`
+	WHERE
+		t_user.user_name = #{user_name}
+
+		AND t_userrole.`user_id` = t_user.`user_id`
+		AND t_role.`role_id` = t_userrole.`role_id`
+		AND t_authoritys.`role_id` = t_role.`role_id`
+		AND t_function.`function_id` = t_authoritys.`function_id`
+	ORDER BY
+		t_function.`function_id`
+	) temp
+	LEFT JOIN t_function father_function ON ( temp.father_function_id = father_function.function_id )
+    </select>
+</mapper>

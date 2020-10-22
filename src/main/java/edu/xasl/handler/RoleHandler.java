@@ -24,19 +24,16 @@ public class RoleHandler {
     public String addrole(@Param("role_name") String role_name,@Param("functions") String functions){
         String f=functions;
         System.out.println(functions);
-        String[] functionArray=f.split("\\.");
+        String[] functionArray=f.split("\\.");                             //将获取的权限转换为数组
         System.out.println(functionArray.length);
         for (int n=0;n<functionArray.length;n++){
             System.out.println(functionArray[n]);
         }
-
-
         List<Authority> authorityList=new ArrayList<>();
-        for (int i=0;i<functionArray.length;i++){
+        for (int i=0;i<functionArray.length;i++){                                  //遍历数组
             Authority authority=new Authority();
-
             authority.setFunction_name(functionArray[i]);
-            authorityList.add(authority);
+            authorityList.add(authority);                                            //将权限添加到authorityList集合中
 
         }
         System.out.println("角色需添加的权限为："+authorityList);
@@ -44,7 +41,7 @@ public class RoleHandler {
         role.setRole_name(role_name);
         role.setAuthorityList(authorityList);
 
-        boolean b=roleService.addrole(role);
+        boolean b=roleService.addrole(role);                                      //调用添加方法
         if (b){
             return "redirect:selectRole.do";
         }else{
@@ -53,14 +50,14 @@ public class RoleHandler {
 
     }
     @RequestMapping("/allfunction.do")
-    public String allfunction(HttpSession session){
+    public String allfunction(HttpSession session){                                       //查询全部权限
         List<Authority> authorityList=roleService.selectAuthority();
         System.out.println(authorityList);
         session.setAttribute("allFunction",authorityList);
         return "redirect:/addRole.jsp";
     }
     @RequestMapping("/selectRole.do")
-    public String selectRole(Integer currentPageNo, HttpSession session){
+    public String selectRole(Integer currentPageNo, HttpSession session){                  //分页查询角色
         PagingForUser pagingForUser=new PagingForUser();
         if(currentPageNo==null){
             currentPageNo=1;
@@ -72,7 +69,7 @@ public class RoleHandler {
 
         return "redirect:/showRole.jsp";
     }
-    @RequestMapping("/updateFindFunction.do")
+    @RequestMapping("/updateFindFunction.do")                                            //更新角色权限前的权限回写
     public String updateFinfFunction(@Param("role_id")String role_id,HttpSession session){
         List<Authority> authorityList = roleService.selectAuthority();
         session.setAttribute("AllFunction",authorityList);
@@ -91,12 +88,12 @@ public class RoleHandler {
 
 
     }
-    @RequestMapping("/updateRoleById.do")
+    @RequestMapping("/updateRoleById.do")                                         //更新角色信息
     public String updateRoleById(@Param("role_id")String role_id,@Param("role_name")String role_name,@Param("function")String function){
         Role role=new Role();
         role.setRole_name(role_name);
         role.setRole_id(Integer.parseInt(role_id));
-        String[] functionArray=function.split("\\.");
+        String[] functionArray=function.split("\\.");                       //将获取的权限转换为数组
         List<Authority> authorityList=new ArrayList<Authority>();
         for(int i=0;i<functionArray.length;i++){
             Authority authority=new Authority();
@@ -118,7 +115,7 @@ public class RoleHandler {
 
 
     }
-    @RequestMapping("/deleteByRoleId.do")
+    @RequestMapping("/deleteByRoleId.do")                                           //获取角色id删除角色
     public String deleteByRoleId(@Param("role_id")String role_id){
         Role role=new Role();
         role.setRole_id(Integer.parseInt(role_id));
@@ -129,7 +126,7 @@ public class RoleHandler {
             return"redirect:/deleteroleerror.jsp";
         }
     }
-    @RequestMapping("/selectUserRole.do")
+    @RequestMapping("/selectUserRole.do")                                           //查找用户角色
     public String selectUserRole(Integer currentPageNo, HttpSession session){
         PagingForUser pagingForUser=new PagingForUser();
         if(currentPageNo==null){
@@ -142,7 +139,7 @@ public class RoleHandler {
 
         return "redirect:/showUserRole.jsp";
     }
-    @RequestMapping("/updateUserroleById.do")
+    @RequestMapping("/updateUserroleById.do")                                             //更新用户角色
     public String updateUserroleById(@Param("user_name") String user_name, @Param("roles")String roles,@Param("user_id")String user_id) {
 
         User user = new User();
@@ -152,25 +149,6 @@ public class RoleHandler {
         System.out.println(user_id);
         user.setRole_name(roles);
         boolean result= roleService.update(user);
-
-
-
-//        String[] functionArray = roles.split("\\.");
-//        System.out.println(functionArray);
-//        List<Role> authorityList = new ArrayList<Role>();
-//        for(int i=0;i<functionArray.length;i++){
-//            Role role=new Role();
-//            role.setRole_name((functionArray[i]));
-//            System.out.println(functionArray[i]);
-//            authorityList.add(role);
-//        }
-
-//        System.out.println(authorityList);
-//        user.setRoleList(authorityList);
-//
-//
-//        boolean result= roleService.update(user);
-//
         if(result){
             return "redirect:selectUserRole.do";
         }else {

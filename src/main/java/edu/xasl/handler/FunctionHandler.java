@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/functionHandler")
 public class FunctionHandler {
     private FunctionService functionService;
-    @RequestMapping("/addfunction.do")
+    @RequestMapping("/addfunction.do")                                                    //添加权限
     public String addfunction(String function_name,String function_address,String fatherFunction){
         boolean result=functionService.addfunction(function_name,function_address,fatherFunction);
         if(result){
@@ -24,13 +24,13 @@ public class FunctionHandler {
             return "redirect:";
         }
     }
-    @RequestMapping("/findAllFatherFunction.do")
+    @RequestMapping("/findAllFatherFunction.do")                                          //查找所有父权限
     public String findAllFatherFunction(HttpSession session){
        List<Authority> list=functionService.findAllFatherFunction();
        session.setAttribute("allFatherFunction",list);
        return"redirect:/addfuntion.jsp";
     }
-    @RequestMapping("/selectFunction.do")
+    @RequestMapping("/selectFunction.do")                                                   //分页查询权限
     public String selectFunction(Integer currentPageNo, HttpSession session){
         PagingForUser pagingForUser=new PagingForUser();
         if(currentPageNo==null){
@@ -43,7 +43,7 @@ public class FunctionHandler {
 
         return "redirect:/showFunction.jsp";
     }
-    @RequestMapping("/selectFunctionById.do")
+    @RequestMapping("/selectFunctionById.do")                                             //通过权限id查询权限
     public String selectFunctionById(String function_id,HttpSession session){
         Authority authority = functionService.selectFunctionById(function_id);
 
@@ -54,7 +54,7 @@ public class FunctionHandler {
         return "redirect:/updatefunction.jsp";
 
     }
-    @RequestMapping("/updatefunction.do")
+    @RequestMapping("/updatefunction.do")                                                  //更新权限信息
     public String updatefunction(String function_name,String function_address,String fatherFunction_name ,HttpSession session){
         Authority authority= (Authority) session.getAttribute("updateFunction");
         int function_id=authority.getFunction_id();
@@ -67,7 +67,7 @@ public class FunctionHandler {
 
 
     }
-    @RequestMapping("/deleteFunction.do")
+    @RequestMapping("/deleteFunction.do")                                                   //删除权限信息
     public String deleteFunction(String function_id){
         boolean b=functionService.deleteFunction(function_id);
         if (b){

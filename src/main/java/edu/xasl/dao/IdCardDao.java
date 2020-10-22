@@ -18,11 +18,11 @@ public interface IdCardDao {
 	//设置PagingForUser里总记录数参数
 	List<IdCard> selectIdCard(Map<String,Integer> map);
 
-	boolean insertIdCard(@Param("idcard_no") String idcard_no);
+	boolean insertIdCard(@Param("idcard_no") String idcard_no);                                                       //插入身份证号
 
-	IdCard upateFindByIdcard(@Param("idcard_id") String idcard_id);
+	IdCard upateFindByIdcard(@Param("idcard_id") String idcard_id);                                                    //通过id查找身份号
 
-	boolean updateidcard(@Param("idcard_id") String idcard_id,@Param("idcard_no") String idcard_no);
+	boolean updateidcard(@Param("idcard_id") String idcard_id,@Param("idcard_no") String idcard_no);                 //通过id修改身份证号
 
 	IdCard selectDeptById(IdCard idCard);
 

@@ -25,23 +25,16 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public boolean addrole(Role role) {
-        boolean result_role=roleDao.insertRole(role);
+        boolean result_role=roleDao.insertRole(role);                             //给角色添加权限
         //让权限中当前角色信息
         List<Role> roleList=new ArrayList<Role>();
         roleList.add(role);
-       // System.out.println();
-       // String role_name=role.getRole_name();
         boolean result_rolefunction=false;
         int flag=0;
-        //Authority authority=new Authority();
-        List<Authority> authorityList= role.getAuthorityList();
+        List<Authority> authorityList= role.getAuthorityList();                     //使用list集合遍历
         System.out.println(authorityList.size());
         for(Authority authority:authorityList){
-
-           // authority.setRole_name(role_name);
-            authority.setRoleList(roleList);
-
-            //System.out.println( "function的role："+authority.getRole_name());
+            authority.setRoleList(roleList);                                        //保存到authority
             System.out.println(authority.getFunction_name());
             boolean result=roleDao.insertRoleFunction(authority);
             if (result){
@@ -56,13 +49,13 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public List<Authority> selectAuthority() {
-        List<Authority> authorityList =roleDao.selectAuthority();
+        List<Authority> authorityList =roleDao.selectAuthority();           //查询角色权限，返回集合
 
         return authorityList;
     }
 
     @Override
-    public PagingForUser selectRole(PagingForUser pagingForUser) {
+    public PagingForUser selectRole(PagingForUser pagingForUser) {            //分页查询
         int totalRecord1=roleDao.selectTotalRecord();
         pagingForUser.setTotalRecord(totalRecord1);
         int startIndex=(pagingForUser.getCurrentPageNo()-1)* Constant.PAGE_UNIT;
@@ -77,7 +70,7 @@ public class RoleServiceImp implements RoleService {
     @Override
     public Role selectRoleById(String role_id) {
         return roleDao.selectRoleById(role_id);
-    }
+    }//id查询
 
     @Override
     public boolean updateRoleById(Role role) {
@@ -103,10 +96,10 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public boolean deleteByRoleId( Role role) {
+    public boolean deleteByRoleId( Role role) {                    //删除角色
         boolean result_role=roleDao.deleteRoleFunction(role);
         boolean result_function=roleDao.deleteByRoleId(role);
-        return result_function&&result_role;
+        return result_function&&result_role;                        //同为true成立
 
     }
 
@@ -124,19 +117,14 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(User user) {                           //  更新用户角色
         System.out.println(user.getRole_name());
         boolean result1=roleDao.updaterole(user);
-
-
-
-
-
         return result1;
     }
 
     @Override
-    public boolean deleteuserrole(String user_id) {
+    public boolean deleteuserrole(String user_id) {               //删除用户角色
         boolean result1=roleDao.deleteuserrole(user_id);
         boolean result2=userDao.deleteUserByIdServlet(user_id);
         return result1&&result2;

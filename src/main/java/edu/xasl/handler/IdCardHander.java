@@ -18,7 +18,7 @@ public class IdCardHander {
 
 
 
-    @RequestMapping("/findAllIdcard.do")
+    @RequestMapping("/findAllIdcard.do")                                                 //分页查找身份证信息
     public String findAllIdcard(Integer currentPageNo, HttpSession session){
         PagingForUser pagingForUser=new PagingForUser();
         if(currentPageNo==null){
@@ -31,13 +31,13 @@ public class IdCardHander {
 
        return "redirect:/IDcardmanagement.jsp";
     }
-    @RequestMapping("/updateById.do")
+    @RequestMapping("/updateById.do")                                                     //更新身份证信息
     public String updateById(HttpSession session,String idcard_id){
         IdCard idCard = idCardService.upateFindByIdcard(idcard_id);
         session.setAttribute("idCard1",idCard);
         return "redirect:/updateidcard.jsp";
     }
-    @RequestMapping("/updateidcard.do")
+    @RequestMapping("/updateidcard.do")                                                   //根据身份证id更新身份证信息
     public String updateidcard(String idcard_id,String idcard_no){
         boolean result=idCardService.updateidcard(idcard_id,idcard_no);
         if(result){
@@ -59,13 +59,13 @@ public class IdCardHander {
 
 
     }
-    @RequestMapping("/deleteById.do")
+    @RequestMapping("/deleteById.do")                                                       //删除身份证信息
     public String deleteById(String idcard_id){
         idCardService.deleteById(idcard_id);
         return "redirect:findAllIdcard.do";
 
     }
-    @RequestMapping("/insertIdCard.do")
+    @RequestMapping("/insertIdCard.do")                                                     //添加身份证信息
     public String insertIdCard(String idcard_no){
         boolean b = idCardService.insertIdCard(idcard_no);
         if (b){
@@ -74,7 +74,7 @@ public class IdCardHander {
             return"redirect:/addidcard.jsp";
         }
     }
-    @RequestMapping("/findallIdCardno.do")
+    @RequestMapping("/findallIdCardno.do")                                                  //添加完倒叙
     public String findallIdCardno(Integer currentPageNo, HttpSession session){
             PagingForUser pagingForUser=new PagingForUser();
             if(currentPageNo==null){

@@ -47,7 +47,7 @@ public class UserHandler {
     @RequestMapping("/updateById.do")
     public String UpdateById(String user_id, String user_name, String user_password, String user_sex, String user_age,String idcard_id,String dept_id){
         userService.updateUserById(user_id, user_name, user_password, user_sex, user_age,idcard_id,dept_id);
-        return "redirect:finduser.do";
+        return "redirect:finduser.do";                              //转发到finuser.do
     }
     @RequestMapping("/deleteuser.do")
     public String deleteuser(String user_id){
@@ -76,9 +76,9 @@ public class UserHandler {
         user.setUser_password(user_password);
         System.out.println(dept_id);
         user.setDept_id(Integer.parseInt(dept_id));
-        String[] functionArray=roles.split("\\.");
+        String[] functionArray=roles.split("\\.");                    //使传回来的角色信息按数组保存
         List<Role> authorityList=new ArrayList<Role>();
-        for(int i=0;i<functionArray.length;i++){
+        for(int i=0;i<functionArray.length;i++){                             //遍历数组
             Role role=new Role();
             role.setRole_name((functionArray[i]));
             System.out.println(functionArray[i]);
@@ -86,10 +86,7 @@ public class UserHandler {
         }
         System.out.println(authorityList);
        user.setRoleList(authorityList);
-
-
        boolean result= userService.register(user);
-
         if(result){
             return "redirect:selectUserRole.do";
         }else {
@@ -138,14 +135,6 @@ public class UserHandler {
         return "redirect:/left.jsp";
 
     }
-
-
-
-
-
-
-
-
     public UserService getUserService() {
         return userService;
     }

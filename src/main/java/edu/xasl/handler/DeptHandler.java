@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/deptHandler")
 public class DeptHandler {
     private DeptService deptService;
-    @RequestMapping("/selectDept.do")
+    @RequestMapping("/selectDept.do")                                                //分页查询部门信息
     public String selectDept(Integer currentPageNo, HttpSession session){
         PagingForUser pagingForUser=new PagingForUser();
         if (currentPageNo==null){
@@ -28,7 +28,7 @@ public class DeptHandler {
         session.setAttribute("currentdept",pagingForUser1);
         return "redirect:/departmentmanagement.jsp";
     }
-    @RequestMapping("/updateDept.do")
+    @RequestMapping("/updateDept.do")                                                 //更新部门信息
     public String updateDept(String dept_id,HttpSession session){
         Dept dept =deptService.selectDeptById(dept_id);
         session.setAttribute("dept1",dept);
@@ -36,7 +36,7 @@ public class DeptHandler {
 
 
     }
-    @RequestMapping("/updateByIdDept.do")
+    @RequestMapping("/updateByIdDept.do")                                            //根据部门id更新部门信息
     public String updateByIdDept(String dept_id,String dept_name,String dept_address){
         boolean result=deptService.updatedept(dept_id,dept_name,dept_address);
         if (result){
@@ -53,7 +53,7 @@ public class DeptHandler {
         session.setAttribute("dept",dept);
         return "redirect:/Afteradddept.jsp";
     }
-    @RequestMapping("/deleteDept.do")
+    @RequestMapping("/deleteDept.do")                                                   //删除部门信息
     public String deleteDept(String dept_id){
        boolean result= deptService.updateUserDept(dept_id);
         System.out.println(result);
@@ -75,13 +75,13 @@ public class DeptHandler {
            }
        }
     }
-    @RequestMapping("/addDept.do")
+    @RequestMapping("/addDept.do")                                                    //添加部门信息
     public String addDept(String dept_name,String dept_address ){
         boolean result=deptService.insertDept(dept_name,dept_address);
         return "redirect:selectDept.do";
 
     }
-    @RequestMapping("/findallUser.do")
+    @RequestMapping("/findallUser.do")                                               //查找部门里的用户
     public String findAllUser(HttpSession session){
         List<User> list=deptService.selectAllUser();
         Dept dept= (Dept) session.getAttribute("dept1");
